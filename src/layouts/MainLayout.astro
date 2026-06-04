@@ -1,0 +1,193 @@
+---
+import '../styles/global.css';
+const { title } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+
+    <!-- Theme Initialization Script (Head mein rakha hai taaki white screen flash na ho) -->
+    <script is:inline>
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const saved = localStorage.getItem('theme');
+      const isDark = saved ? saved === 'dark' : prefersDark;
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      }
+    </script>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap');
+
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        /* Backgrounds & Surfaces */
+        --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f3e8ff 50%, #fdf4ff 100%);
+        --surface: rgba(255, 255, 255, 0.80);
+        --surface-border: rgba(99, 89, 220, 0.15);
+        --card-bg: rgba(255, 255, 255, 0.82);
+        --card-border: rgba(99, 89, 220, 0.18);
+        
+        /* Text & Accents */
+        --text-primary: #1e1b4b;
+        --text-secondary: #4b5563; 
+        --accent: #6c63ff;
+        --accent-soft: rgba(108, 99, 255, 0.1);
+      }
+
+      .dark {
+        /* Backgrounds & Surfaces */
+        --bg-gradient: linear-gradient(135deg, #0d0d0d 0%, #12101f 50%, #0d150d 100%);
+        --surface: rgba(255, 255, 255, 0.05);
+        --surface-border: rgba(255, 255, 255, 0.1);
+        --card-bg: rgba(255, 255, 255, 0.04);
+        --card-border: rgba(255, 255, 255, 0.1);
+        
+        /* Text & Accents */
+        --text-primary: #f9fafb; 
+        --text-secondary: #d1d5db; /* Isko thoda light kiya hai better visibility ke liye */
+        --accent: #8b85ff;
+        --accent-soft: rgba(139, 133, 255, 0.15);
+      }
+
+      html, body {
+        min-height: 100vh;
+        font-family: 'Syne', sans-serif;
+        background: var(--bg-gradient);
+        color: var(--text-primary);
+        transition: background 0.4s ease, color 0.3s ease;
+      }
+
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 2rem;
+        background: var(--surface);
+        border-bottom: 1px solid var(--surface-border);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      .nav-logo {
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+
+      .nav-logo span { color: var(--accent); }
+
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        border: 1px solid var(--surface-border);
+        border-radius: 999px;
+        padding: 6px 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .theme-toggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .toggle-icon {
+        font-size: 14px;
+        transition: transform 0.4s ease;
+      }
+
+      .theme-toggle:hover .toggle-icon { transform: rotate(20deg); }
+
+      .toggle-track {
+        width: 32px;
+        height: 18px;
+        border-radius: 9px;
+        background: var(--surface-border);
+        position: relative;
+        transition: background 0.3s;
+      }
+
+      .dark .toggle-track { background: var(--accent); }
+
+      .toggle-thumb {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--text-secondary);
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        transition: left 0.3s ease, background 0.3s;
+      }
+
+      .dark .toggle-thumb {
+        left: 17px;
+        background: white;
+      }
+
+      main {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Page scrollbar */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; opacity: 0.5; }
+    </style>
+  </head>
+
+  <body>
+    <nav>
+      <a href="/" class="nav-logo">Linux<span>.</span>ToolHub</a>
+      <button class="theme-toggle" id="theme-btn" aria-label="Toggle theme">
+        <span class="toggle-icon" id="toggle-icon">☀️</span>
+        <div class="toggle-track">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span id="toggle-label">Light</span>
+      </button>
+    </nav>
+
+    <main>
+      <slot />
+    </main>
+
+    <!-- Toggle Button Logic -->
+    <script>
+      const html = document.documentElement;
+      const btn = document.getElementById('theme-btn');
+      const icon = document.getElementById('toggle-icon');
+      const label = document.getElementById('toggle-label');
+
+      // Set initial state of button based on HTML class set by head script
+      if (html.classList.contains('dark')) {
+        icon.textContent = '🌙';
+        label.textContent = 'Dark';
+      }
+
+      btn.addEventListener('click', () => {
+        const nowDark = html.classList.toggle('dark');
+        icon.textContent = nowDark ? '🌙' : '☀️';
+        label.textContent = nowDark ? 'Dark' : 'Light';
+        localStorage.setItem('theme', nowDark ? 'dark' : 'light');
+      });
+    </script>
+  </body>
+</html>
