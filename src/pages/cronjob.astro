@@ -1,0 +1,164 @@
+---
+import Navbar from '../components/Navbar.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Cronjob Generator | Tool Hub">
+  <style>
+    /* Core Layout CSS */
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); color: #8b85ff; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: var(--text-primary, #ffffff); line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    .page-title span { color: #8b85ff; }
+    
+    .type-cursor { display: inline-block; width: 2px; color: #8b85ff; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
+    @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    
+    /* Input Section CSS */
+    .input-card { background: var(--card-bg, #111827); border: 1px solid var(--card-border, #1f2937); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: border-color 0.2s; }
+    .input-card:focus-within { border-color: rgba(108,99,255,0.5); }
+    .input-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 700; color: var(--text-secondary, #9ca3af); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
+    .log-textarea { width: 100%; background: #0a0a0f; color: #a78bfa; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.7; padding: 1rem; border-radius: 10px; border: 1px solid #1f2937; resize: vertical; outline: none; min-height: 120px; transition: border-color 0.2s; }
+    .log-textarea:focus { border-color: #6c63ff; }
+    .log-textarea::placeholder { color: #374151; }
+    
+    .analyze-btn { width: 100%; margin-top: 1rem; padding: 0.9rem 1.5rem; background: linear-gradient(135deg, #6c63ff, #8b5cf6); color: white; font-weight: 700; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
+    .analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,0.4); }
+    .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* AI Formatting */
+    .sol-heading { color: #a78bfa; font-size: 0.85rem; font-weight: 700; margin: 1.2rem 0 0.5rem; padding-bottom: 4px; border-bottom: 1px solid #1f2937; display: block; }
+    .sol-cmd { background: rgba(74,222,128,0.1); color: #4ade80; padding: 2px 7px; border-radius: 4px; font-size: 0.8em; border: 1px solid rgba(74,222,128,0.25); }
+    .sol-code-block { background: rgba(0,0,0,0.4); border-left: 2px solid #4ade80; padding: 12px; margin: 10px 0; border-radius: 4px; color: #4ade80; font-size: 1.2rem; text-align: center; overflow-x: auto; white-space: pre-wrap; font-weight: bold; }
+    
+    @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+    .dot1 { animation: blink 1.2s infinite 0s; }
+    .dot2 { animation: blink 1.2s infinite 0.2s; }
+    .dot3 { animation: blink 1.2s infinite 0.4s; }
+  </style>
+
+  <div style="max-width:1100px;margin:0 auto;padding:3rem 1.25rem 4rem;">
+    <div style="text-align:center;margin-bottom:2.5rem;">
+      <div class="hero-badge"><span>⏳</span> Automation Tool</div>
+      <h1 class="page-title">AI Cronjob<br><span>Generator</span></h1>
+      
+      <p style="color: #9ca3af; max-width: 550px; margin: 0 auto; line-height: 1.6; min-height: 48px;">
+        <span id="typewriter-text"></span><span class="type-cursor">|</span>
+      </p>
+    </div>
+
+    <Navbar currentPath="/cronjob" />
+
+    <div id="input-section" style="max-width:680px;margin:0 auto 2rem;">
+      <div class="input-card">
+        <div class="input-label">
+          <span style="width:8px;height:8px;background:#a78bfa;border-radius:50%;display:inline-block;"></span>
+          Describe your schedule (Simple English)
+        </div>
+        <textarea id="cron-input" class="log-textarea" rows="4" placeholder="e.g., Run /scripts/backup.sh every Sunday at 2:00 AM..."></textarea>
+        <button class="analyze-btn" id="submit-btn">Generate Cronjob ⏳</button>
+      </div>
+      
+      <div id="result-area" style="margin-top: 2rem; display: none; background: #0a0a0f; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; color: #e5e7eb; font-family: 'JetBrains Mono', monospace; line-height: 1.6;"></div>
+    </div>
+  </div>
+</MainLayout>
+
+<script is:inline>
+  // 1. Typewriter Logic
+  setTimeout(typeEffect, 500);
+  const phrases = [
+    "Describe your schedule in plain text — AI will instantly generate the perfect Cron format.", 
+    "Simple bhasha mein apna schedule batao — AI turant perfect Cron format dega.", 
+    "सरल भाषा में अपना शेड्यूलिंग बताएं — AI तुरंत सही क्रॉन (Cron) फॉर्मेट तैयार करेगा।", 
+    "Describa su horario en texto plano — la IA generará el formato Cron perfecto al instante.", 
+    "Décrivez votre emploi du temps en texte brut — l'IA générera instantanément le format Cron parfait.", 
+    "Beschreiben Sie Ihren Zeitplan im Klartext — die KI generiert sofort das perfekte Cron-Format.", 
+    "スケジュールをプレーンテキストで記述してください — AIが即座に完璧なCronフォーマットを生成します。", 
+    "用纯文本描述您的日程安排 — AI 将立即生成完美的 Cron 格式。", 
+    "Опишите свое расписание простым текстом — ИИ мгновенно сгенерирует идеальный формат Cron." 
+  ];
+  let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+  function typeEffect() {
+    const el = document.getElementById('typewriter-text');
+    if (!el) return;
+    const currentPhrase = phrases[phraseIndex];
+
+    if (isDeleting) {
+      el.textContent = currentPhrase.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      el.textContent = currentPhrase.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let speed = isDeleting ? 25 : 45;
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      speed = 2000; isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500;
+    }
+    setTimeout(typeEffect, speed);
+  }
+
+  // 2. Format AI Output Logic
+  function renderSolution(text) {
+    try { const parsed = JSON.parse(text); if (parsed.result) text = parsed.result; } catch(e) {}
+    text = text.replace(/\\n/g, '\n');
+    let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    html = html.replace(/```[a-z]*\n([\s\S]*?)```/g, '<div class="sol-code-block">$1</div>');
+    html = html.replace(/^#{1,6}\s+(.+)$/gm, '<span class="sol-heading">$1</span>');
+    html = html.replace(/`([^`]+)`/g, '<code class="sol-cmd">$1</code>');
+    html = html.replace(/\n/g, '<br>'); 
+    return html;
+  }
+
+  // 3. REAL Backend API Call for Cronjob
+  document.getElementById('submit-btn')?.addEventListener('click', async () => {
+    const input = document.getElementById('cron-input').value.trim();
+    if(!input) {
+      document.getElementById('cron-input').style.borderColor = '#ef4444';
+      setTimeout(() => document.getElementById('cron-input').style.borderColor = '#1f2937', 1500);
+      return;
+    }
+    
+    const btn = document.getElementById('submit-btn');
+    const resultArea = document.getElementById('result-area');
+    
+    btn.innerHTML = 'Generating <span class="dot1">●</span><span class="dot2">●</span><span class="dot3">●</span>';
+    btn.disabled = true;
+    resultArea.style.display = 'block';
+    resultArea.innerHTML = "<span style='color:#818cf8;'>Connecting to AI Backend...</span>";
+    
+    // Yahan humne AI ko specifically Cron format dene ko bola hai
+    const modifiedPrompt = `Act as an expert Linux System Administrator. The user wants to schedule a cronjob: "${input}". Provide ONLY the exact cronjob schedule format (e.g., * * * * * /command) inside a markdown code block, followed by a brief 1-line explanation of what it does.`;
+
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logText: modifiedPrompt }) // Tumhari API!
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      resultArea.innerHTML = ""; 
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+        resultArea.innerHTML = renderSolution(fullText);
+      }
+    } catch (err) {
+      resultArea.innerHTML = `<span style="color:#ef4444;">⚠️ Error: ${err.message}</span>`;
+    } finally {
+      btn.innerHTML = "Generate Cronjob ⏳";
+      btn.disabled = false;
+    }
+  });
+</script>

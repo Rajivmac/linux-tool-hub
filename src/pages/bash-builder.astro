@@ -1,0 +1,164 @@
+---
+import Navbar from '../components/Navbar.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Bash Script Builder | Tool Hub">
+  <style>
+    /* Standard Layout CSS */
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.3); color: #ec4899; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    .page-title span { color: #ec4899; }
+    .page-subtitle { color: #9ca3af; font-size: clamp(0.9rem, 2vw, 1rem); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.6; min-height: 48px; }
+    
+    .type-cursor { display: inline-block; width: 2px; color: #ec4899; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
+    @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .input-card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 24px rgba(0,0,0,0.3); transition: border-color 0.2s; }
+    .input-card:focus-within { border-color: rgba(236,72,153,0.5); }
+    .input-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 0.75rem; }
+    
+    .log-textarea { width: 100%; background: #0a0a0f; color: #ec4899; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; padding: 1rem; border-radius: 10px; border: 1px solid #1f2937; resize: vertical; outline: none; min-height: 120px; transition: border-color 0.2s; }
+    .log-textarea:focus { border-color: #ec4899; }
+    
+    .analyze-btn { width: 100%; margin-top: 1rem; padding: 0.9rem 1.5rem; background: linear-gradient(135deg, #ec4899, #be185d); color: white; font-weight: 700; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer; transition: 0.2s; }
+    .analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(236,72,153,0.4); }
+    .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* AI Response Styling */
+    .sol-heading { color: #f472b6; font-size: 0.9rem; font-weight: 700; margin: 1.2rem 0 0.5rem; padding-bottom: 4px; border-bottom: 1px solid #1f2937; display: block; }
+    .sol-cmd { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 7px; border-radius: 4px; font-size: 0.8em; border: 1px solid rgba(16, 185, 129, 0.25); }
+    .sol-code-block { background: rgba(0,0,0,0.6); border-left: 2px solid #ec4899; padding: 15px; margin: 10px 0; border-radius: 6px; color: #e5e7eb; overflow-x: auto; white-space: pre-wrap; font-size: 0.85rem; }
+    
+    @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+    .dot1 { animation: blink 1.2s infinite 0s; }
+    .dot2 { animation: blink 1.2s infinite 0.2s; }
+    .dot3 { animation: blink 1.2s infinite 0.4s; }
+  </style>
+
+  <div style="max-width:1100px;margin:0 auto;padding:3rem 1.25rem 4rem;">
+    <div style="text-align:center;margin-bottom:2.5rem;">
+      <div class="hero-badge"><span>🤖</span> AI Scripting Engine</div>
+      <h1 class="page-title">Bash Script<br><span>Builder</span></h1>
+      
+      <p class="page-subtitle">
+        <span id="typewriter-text"></span><span class="type-cursor">|</span>
+      </p>
+    </div>
+
+    <Navbar currentPath="/bash-builder" />
+
+    <div id="input-section" style="max-width:680px;margin:0 auto 2rem;">
+      <div class="input-card">
+        <div class="input-label">
+          <span style="width:8px;height:8px;background:#ec4899;border-radius:50%;display:inline-block;"></span>
+          Script Logic Description
+        </div>
+        <textarea id="script-input" class="log-textarea" placeholder="e.g., Ek aisi script banao jo /var/log se 7 din purani .log files delete kare aur admin ko email bhej de..."></textarea>
+        <button class="analyze-btn" id="build-btn">Generate Script ⚡</button>
+      </div>
+
+      <div id="script-result" style="margin-top: 2rem; display: none; background: #0a0a0f; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; line-height: 1.6;"></div>
+    </div>
+  </div>
+</MainLayout>
+
+<script is:inline>
+  // 1. Typewriter Logic
+  setTimeout(typeEffect, 500);
+  const phrases = [
+    "Logic batao, aur AI properly commented, error-free Bash script generate karke dega.", 
+    "Describe the logic, and AI will generate a properly commented, error-free Bash script.", 
+    "लॉजिक बताएं, और AI तुरंत एक सटीक बैश (Bash) स्क्रिप्ट तैयार कर देगा।", 
+    "Describa la lógica y la IA generará un script Bash sin errores.", 
+    "Décrivez la logique, et l'IA générera un script Bash sans erreur.", 
+    "Beschreiben Sie die Logik, und die KI generiert ein fehlerfreies Bash-Skript.", 
+    "ロジックを説明すると、AIがエラーのないBashスクリプトを生成します。", 
+    "描述逻辑，AI 将生成带有注释的无错 Bash 脚本。", 
+    "Опишите логику, и ИИ сгенерирует идеальный Bash-скрипт." 
+  ];
+  let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+  function typeEffect() {
+    const el = document.getElementById('typewriter-text');
+    if (!el) return;
+    const currentPhrase = phrases[phraseIndex];
+
+    if (isDeleting) {
+      el.textContent = currentPhrase.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      el.textContent = currentPhrase.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let speed = isDeleting ? 25 : 45;
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      speed = 2000; isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500;
+    }
+    setTimeout(typeEffect, speed);
+  }
+
+  // 2. Format AI Output Logic
+  function renderSolution(text) {
+    try { const parsed = JSON.parse(text); if (parsed.result) text = parsed.result; } catch(e) {}
+    text = text.replace(/\\n/g, '\n');
+    let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    html = html.replace(/```[a-z]*\n([\s\S]*?)```/g, '<div class="sol-code-block">$1</div>');
+    html = html.replace(/^#{1,6}\s+(.+)$/gm, '<span class="sol-heading">$1</span>');
+    html = html.replace(/`([^`]+)`/g, '<code class="sol-cmd">$1</code>');
+    html = html.replace(/\n/g, '<br>'); 
+    return html;
+  }
+
+  // 3. Real Backend API Call
+  document.getElementById('build-btn')?.addEventListener('click', async () => {
+    const input = document.getElementById('script-input').value.trim();
+    if(!input) {
+      document.getElementById('script-input').style.borderColor = '#ef4444';
+      setTimeout(() => document.getElementById('script-input').style.borderColor = '#1f2937', 1500);
+      return;
+    }
+    
+    const btn = document.getElementById('build-btn');
+    const result = document.getElementById('script-result');
+    
+    btn.innerHTML = 'Writing Code <span class="dot1">●</span><span class="dot2">●</span><span class="dot3">●</span>';
+    btn.disabled = true;
+    result.style.display = 'block';
+    result.innerHTML = `<span style="color:#f472b6;">Connecting to AI Backend...</span>`;
+    
+    // We modify the prompt here to force the AI to write a script instead of analyzing a log
+    const modifiedPrompt = `Act as an expert Linux System Administrator. Write a bash script based on this request: "${input}". Provide the script inside a markdown code block, and briefly explain how to execute it.`;
+
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ logText: modifiedPrompt }) // Using your existing API!
+      });
+
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      result.innerHTML = ""; 
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+        result.innerHTML = renderSolution(fullText);
+      }
+    } catch (err) {
+      result.innerHTML = `<span style="color:#ef4444;">⚠️ Error: ${err.message}</span>`;
+    } finally {
+      btn.innerHTML = "Generate Script ⚡";
+      btn.disabled = false;
+    }
+  });
+</script>

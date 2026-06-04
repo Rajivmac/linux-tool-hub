@@ -23,7 +23,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     .page-title {
       font-size: clamp(1.8rem, 5vw, 2.8rem);
       font-weight: 800;
-      color: var(--text-primary);
+      color: var(--text-primary, #ffffff);
       line-height: 1.15;
       letter-spacing: -0.03em;
       margin-bottom: 0.75rem;
@@ -32,21 +32,58 @@ import MainLayout from '../layouts/MainLayout.astro';
     .page-title span { color: #8b85ff; }
 
     .page-subtitle {
-      color: var(--text-secondary);
+      color: var(--text-secondary, #9ca3af);
       font-size: clamp(0.9rem, 2vw, 1rem);
       max-width: 520px;
       margin: 0 auto 2.5rem;
       line-height: 1.6;
-      min-height: 48px; /* ⚡ Added to prevent jump during typing */
+      min-height: 48px;
     }
 
-    /* ⚡ New Cursor Animation */
     .type-cursor { display: inline-block; width: 2px; color: #8b85ff; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
     @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+    /* ⚡ NEW: Multi-Tool Tabs CSS */
+    .tool-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(31, 41, 55, 0.4);
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      color: #9ca3af;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .tab-link:hover {
+      background: rgba(31, 41, 55, 0.8);
+      color: #e5e7eb;
+      transform: translateY(-2px);
+    }
+    .tab-link.active {
+      background: rgba(108, 99, 255, 0.1);
+      border-color: rgba(108, 99, 255, 0.4);
+      color: #8b85ff;
+      box-shadow: 0 4px 15px rgba(108, 99, 255, 0.15);
+    }
+    .tab-icon {
+      font-size: 1.1rem;
+    }
+
+    /* Input Section CSS */
     .input-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: var(--card-bg, #111827);
+      border: 1px solid var(--card-border, #1f2937);
       border-radius: 16px;
       padding: 1.5rem;
       backdrop-filter: blur(12px);
@@ -68,7 +105,7 @@ import MainLayout from '../layouts/MainLayout.astro';
       gap: 8px;
       font-size: 0.82rem;
       font-weight: 700;
-      color: var(--text-secondary);
+      color: var(--text-secondary, #9ca3af);
       text-transform: uppercase;
       letter-spacing: 0.08em;
       margin-bottom: 0.75rem;
@@ -207,7 +244,6 @@ import MainLayout from '../layouts/MainLayout.astro';
     }
     .normal-line { display: block; padding: 2px 4px; }
 
-    /* AI Formatting Styles */
     .sol-heading {
       color: #a78bfa;
       font-size: 0.85rem;
@@ -277,6 +313,22 @@ import MainLayout from '../layouts/MainLayout.astro';
       </p>
     </div>
 
+    <!-- ⚡ NEW: Multi-Tool Navigation Tabs -->
+    <div class="tool-tabs">
+      <a href="/" class="tab-link active">
+        <span class="tab-icon">🧠</span>
+        AI Log Explainer
+      </a>
+      <a href="/cronjob" class="tab-link">
+        <span class="tab-icon">⏳</span>
+        Cronjob Generator
+      </a>
+      <a href="/panel" class="tab-link">
+        <span class="tab-icon">⚙️</span>
+        System Panel
+      </a>
+    </div>
+
     <div id="input-section" style="max-width:680px;margin:0 auto 2rem;">
       <div class="input-card">
         <div class="input-label">
@@ -315,15 +367,12 @@ import MainLayout from '../layouts/MainLayout.astro';
 </MainLayout>
 
 <script is:inline>
-  // ⚡ FIX: DOMContentLoaded hata diya hai. Ab buttons bina delay ke turant connect honge.
   document.getElementById('submit-btn')?.addEventListener('click', analyzeLog);
   document.getElementById('edit-btn')?.addEventListener('click', resetForm);
   document.getElementById('copy-btn')?.addEventListener('click', copyResponse);
   
-  // Start the typing effect
   setTimeout(typeEffect, 500);
 
-  // ⚡ Typewriter Logic Integration (9 Languages)
   const phrases = [
     "Apna failed service output ya error log paste karo — AI turant root cause aur exact fix batayega.", 
     "Paste your failed service output or error log — AI will instantly provide the root cause and fix.", 
@@ -384,7 +433,8 @@ import MainLayout from '../layouts/MainLayout.astro';
 
     let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-    html = html.replace(/```[a-z]*\n([\s\S]*?)```/g, '<div class="sol-code-block">$1</div>');
+    html = html.replace(/```[a-z]*\n([\s\S]*?)
+```/g, '<div class="sol-code-block">$1</div>');
     html = html.replace(/^#{1,6}\s+(.+)$/gm, '<span class="sol-heading">$1</span>');
     html = html.replace(/\*\*([^*]+)\*\*/g, '<span class="sol-bold">$1</span>');
     html = html.replace(/`([^`]+)`/g, '<code class="sol-cmd">$1</code>');

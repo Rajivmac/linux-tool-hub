@@ -1,0 +1,58 @@
+---
+// Yeh prop hume batayega ki user currently kis page par hai
+const { currentPath } = Astro.props;
+
+// Yahan tumhare saare tools ki list hai
+const tabs = [
+  { name: '🧠 AI Log Explainer', path: '/' },
+  { name: '🤖 Bash Builder', path: '/bash-builder' },
+  { name: '⏳ Cronjob Gen', path: '/cronjob' },
+  { name: '🧮 Chmod Calc', path: '/chmod' },
+  { name: '💾 LVM Planner', path: '/lvm-planner' },
+  { name: '🌐 Network Gen', path: '/network-config' },
+  { name: '⚙️ System Panel', path: '/panel' },
+];
+---
+
+<style>
+  .tool-tabs { 
+    display: flex; 
+    justify-content: center; 
+    gap: 0.8rem; 
+    margin-bottom: 2.5rem; 
+    flex-wrap: wrap; 
+  }
+  .tab-link { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 6px; 
+    padding: 8px 16px; 
+    background: rgba(31, 41, 55, 0.4); 
+    border: 1px solid #1f2937; 
+    border-radius: 10px; 
+    color: #9ca3af; 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    text-decoration: none; 
+    transition: all 0.2s ease; 
+  }
+  .tab-link:hover { 
+    background: rgba(31, 41, 55, 0.8); 
+    color: #e5e7eb; 
+    transform: translateY(-2px); 
+  }
+  .tab-link.active { 
+    background: rgba(108, 99, 255, 0.1); 
+    border-color: rgba(108, 99, 255, 0.4); 
+    color: #8b85ff; 
+    box-shadow: 0 4px 15px rgba(108, 99, 255, 0.15); 
+  }
+</style>
+
+<div class="tool-tabs">
+  {tabs.map((tab) => (
+    <a href={tab.path} class={`tab-link ${currentPath === tab.path ? 'active' : ''}`}>
+      {tab.name}
+    </a>
+  ))}
+</div>

@@ -1,0 +1,177 @@
+---
+import Navbar from '../components/Navbar.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="File Permission Calculator | Tool Hub">
+  <style>
+    /* Core Layout CSS */
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: var(--text-primary, #ffffff); line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    .page-title span { color: #38bdf8; }
+    
+    .type-cursor { display: inline-block; width: 2px; color: #38bdf8; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
+    @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    
+    /* Chmod Specific CSS */
+    .chmod-container { max-width: 800px; margin: 0 auto; background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 24px rgba(0,0,0,0.2); }
+    .permission-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+    
+    @media (max-width: 640px) {
+      .permission-grid { grid-template-columns: 1fr; }
+    }
+
+    .perm-column { background: #0a0a0f; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; text-align: center; }
+    .perm-header { color: #e5e7eb; font-weight: 700; margin-bottom: 1rem; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #1f2937; padding-bottom: 0.5rem; }
+    
+    .checkbox-group { display: flex; flex-direction: column; gap: 1rem; text-align: left; padding-left: 10%; }
+    .checkbox-label { display: flex; align-items: center; gap: 10px; color: #9ca3af; font-weight: 600; cursor: pointer; transition: color 0.2s; }
+    .checkbox-label:hover { color: #38bdf8; }
+    .checkbox-label input { width: 18px; height: 18px; accent-color: #38bdf8; cursor: pointer; }
+
+    /* Result Area */
+    .result-box { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 1.5rem; text-align: center; display: flex; flex-direction: column; gap: 10px; }
+    .octal-value { font-size: 3rem; font-weight: 800; color: #38bdf8; line-height: 1; font-family: 'JetBrains Mono', monospace; }
+    .symbolic-value { font-size: 1.2rem; color: #9ca3af; font-family: 'JetBrains Mono', monospace; letter-spacing: 2px; }
+    
+    .command-display { background: #000; border: 1px solid #374151; padding: 1rem; border-radius: 8px; color: #4ade80; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .copy-btn { background: #1f2937; border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; transition: 0.2s; }
+    .copy-btn:hover { background: #38bdf8; color: #000; }
+  </style>
+
+  <div style="max-width:1100px;margin:0 auto;padding:3rem 1.25rem 4rem;">
+    <div style="text-align:center;margin-bottom:2.5rem;">
+      <div class="hero-badge"><span>🧮</span> Visual Admin Tool</div>
+      <h1 class="page-title">File Permission<br><span>Calculator</span></h1>
+      
+      <p style="color: #9ca3af; max-width: 550px; margin: 0 auto; line-height: 1.6; min-height: 48px;">
+        <span id="typewriter-text"></span><span class="type-cursor">|</span>
+      </p>
+    </div>
+
+    <Navbar currentPath="/chmod" />
+
+    <div class="chmod-container">
+      <div class="permission-grid">
+        
+        <div class="perm-column">
+          <div class="perm-header" style="color: #f87171;">Owner</div>
+          <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" id="o-r" checked onchange="calculatePermissions()"> Read (4)</label>
+            <label class="checkbox-label"><input type="checkbox" id="o-w" checked onchange="calculatePermissions()"> Write (2)</label>
+            <label class="checkbox-label"><input type="checkbox" id="o-x" checked onchange="calculatePermissions()"> Execute (1)</label>
+          </div>
+        </div>
+
+        <div class="perm-column">
+          <div class="perm-header" style="color: #fbbf24;">Group</div>
+          <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" id="g-r" checked onchange="calculatePermissions()"> Read (4)</label>
+            <label class="checkbox-label"><input type="checkbox" id="g-w" onchange="calculatePermissions()"> Write (2)</label>
+            <label class="checkbox-label"><input type="checkbox" id="g-x" checked onchange="calculatePermissions()"> Execute (1)</label>
+          </div>
+        </div>
+
+        <div class="perm-column">
+          <div class="perm-header" style="color: #60a5fa;">Public</div>
+          <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" id="p-r" checked onchange="calculatePermissions()"> Read (4)</label>
+            <label class="checkbox-label"><input type="checkbox" id="p-w" onchange="calculatePermissions()"> Write (2)</label>
+            <label class="checkbox-label"><input type="checkbox" id="p-x" checked onchange="calculatePermissions()"> Execute (1)</label>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="result-box">
+        <div class="octal-value" id="octal-display">755</div>
+        <div class="symbolic-value" id="symbolic-display">-rwxr-xr-x</div>
+        
+        <div class="command-display">
+          <span id="final-command">chmod 755 filename</span>
+          <button class="copy-btn" id="copy-chmod" onclick="copyCommand()">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</MainLayout>
+
+<script is:inline>
+  // 1. Typewriter Logic
+  setTimeout(typeEffect, 500);
+  const phrases = [
+    "Boxes tick karo aur turant exact chmod command generate karo.", 
+    "Tick the boxes and instantly generate the exact chmod command.", 
+    "बॉक्स टिक करें और तुरंत सटीक chmod कमांड प्राप्त करें।", 
+    "Marque las casillas y genere al instante el comando chmod exacto.", 
+    "Cochez les cases et générez instantanément la commande chmod exacte.", 
+    "Kreuzen Sie die Kästchen an und generieren Sie sofort den exakten chmod-Befehl.", 
+    "チェックボックスをオンにして、正確なchmodコマンドを即座に生成します。", 
+    "勾选复选框并立即生成精确的 chmod 命令。", 
+    "Отметьте галочками и мгновенно сгенерируйте точную команду chmod." 
+  ];
+  let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+  function typeEffect() {
+    const el = document.getElementById('typewriter-text');
+    if (!el) return;
+    const currentPhrase = phrases[phraseIndex];
+
+    if (isDeleting) {
+      el.textContent = currentPhrase.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      el.textContent = currentPhrase.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let speed = isDeleting ? 25 : 45;
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      speed = 2000; isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500;
+    }
+    setTimeout(typeEffect, speed);
+  }
+
+  // 2. Pure Frontend Logic for Chmod - No API Required
+  function calculatePermissions() {
+    // Owner
+    let o = 0; let oSym = "";
+    if (document.getElementById('o-r').checked) { o += 4; oSym += "r"; } else { oSym += "-"; }
+    if (document.getElementById('o-w').checked) { o += 2; oSym += "w"; } else { oSym += "-"; }
+    if (document.getElementById('o-x').checked) { o += 1; oSym += "x"; } else { oSym += "-"; }
+
+    // Group
+    let g = 0; let gSym = "";
+    if (document.getElementById('g-r').checked) { g += 4; gSym += "r"; } else { gSym += "-"; }
+    if (document.getElementById('g-w').checked) { g += 2; gSym += "w"; } else { gSym += "-"; }
+    if (document.getElementById('g-x').checked) { g += 1; gSym += "x"; } else { gSym += "-"; }
+
+    // Public
+    let p = 0; let pSym = "";
+    if (document.getElementById('p-r').checked) { p += 4; pSym += "r"; } else { pSym += "-"; }
+    if (document.getElementById('p-w').checked) { p += 2; pSym += "w"; } else { pSym += "-"; }
+    if (document.getElementById('p-x').checked) { p += 1; pSym += "x"; } else { pSym += "-"; }
+
+    // Update DOM
+    const octal = `${o}${g}${p}`;
+    const symbolic = `-${oSym}${gSym}${pSym}`;
+    
+    document.getElementById('octal-display').innerText = octal;
+    document.getElementById('symbolic-display').innerText = symbolic;
+    document.getElementById('final-command').innerText = `chmod ${octal} filename`;
+  }
+
+  function copyCommand() {
+    const textToCopy = document.getElementById('final-command').innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const btn = document.getElementById('copy-chmod');
+      btn.innerText = '✅ Copied!';
+      setTimeout(() => btn.innerText = '📋 Copy', 2000);
+    });
+  }
+
+  // Initialize on load
+  calculatePermissions();
+</script>

@@ -1,0 +1,129 @@
+---
+import Navbar from '../components/Navbar.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="Network Config Generator | Tool Hub">
+  <style>
+    /* Network Theme: Cyan */
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.3); color: #06b6d4; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 0.75rem; }
+    .page-title span { color: #06b6d4; }
+    
+    .type-cursor { display: inline-block; width: 2px; color: #06b6d4; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
+    @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .net-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
+    @media(max-width: 600px){ .net-grid { grid-template-columns: 1fr; } }
+    
+    .input-box { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; }
+    .input-label { color: #9ca3af; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; display: block; text-transform: uppercase; }
+    .std-input { width: 100%; background: #0a0a0f; color: #fff; padding: 0.8rem; border: 1px solid #374151; border-radius: 8px; font-family: monospace; margin-bottom: 1rem; }
+    
+    .generate-btn { width: 100%; grid-column: 1 / -1; padding: 1rem; background: #0891b2; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .generate-btn:hover { background: #0e7490; }
+    
+    .command-box { background: #000; border-left: 4px solid #06b6d4; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; color: #4ade80; border-radius: 8px; margin-top: 2rem; display: none; line-height: 1.8; white-space: pre-wrap; }
+  </style>
+
+  <div style="max-width:1100px;margin:0 auto;padding:3rem 1.25rem 4rem;">
+    <div style="text-align:center;margin-bottom:2.5rem;">
+      <div class="hero-badge"><span>🌐</span> Network Admin Tool</div>
+      <h1 class="page-title">Network Config<br><span>Generator</span></h1>
+      
+      <p style="color: #9ca3af; max-width: 550px; margin: 0 auto; line-height: 1.6; min-height: 48px;">
+        <span id="typewriter-text"></span><span class="type-cursor">|</span>
+      </p>
+    </div>
+
+    <Navbar currentPath="/network-config" />
+
+    <div class="net-grid">
+      <div class="input-box">
+        <label class="input-label">Connection Name</label>
+        <input type="text" id="conn-name" class="std-input" placeholder="e.g., static-eth0" value="static-eth0">
+        
+        <label class="input-label">Interface Name (ifname)</label>
+        <input type="text" id="if-name" class="std-input" placeholder="e.g., enp1s0" value="enp1s0">
+      </div>
+      
+      <div class="input-box">
+        <label class="input-label">IP Address & Prefix</label>
+        <input type="text" id="ip-addr" class="std-input" placeholder="192.168.1.100/24" value="192.168.1.100/24">
+        
+        <label class="input-label">Gateway & DNS (Space Separated)</label>
+        <input type="text" id="gw-dns" class="std-input" placeholder="GW: 192.168.1.1 | DNS: 8.8.8.8" value="192.168.1.1 8.8.8.8">
+      </div>
+      
+      <button class="generate-btn" onclick="generateNet()">Generate nmcli Commands</button>
+    </div>
+
+    <div class="command-box" id="net-commands"></div>
+  </div>
+</MainLayout>
+
+<script is:inline>
+  // 1. Typewriter Logic
+  setTimeout(typeEffect, 500);
+  const phrases = [
+    "Bina syntax error ke static IP aur DNS set karne ke exact nmcli commands.", 
+    "Generate exact nmcli commands to set static IP and DNS without errors.", 
+    "बिना सिंटैक्स एरर के स्टैटिक IP और DNS सेट करने के सटीक nmcli कमांड्स।", 
+    "Genere comandos nmcli exactos para configurar IP estática y DNS sin errores.", 
+    "Générez des commandes nmcli exactes pour configurer une IP statique et un DNS.", 
+    "Generieren Sie exakte nmcli-Befehle, um statische IP und DNS fehlerfrei festzulegen.", 
+    "構文エラーなしで静的IPとDNSを設定するための正確なnmcliコマンドを生成します。", 
+    "生成精确的 nmcli 命令以设置静态 IP 和 DNS，无语法错误。", 
+    "Сгенерируйте точные команды nmcli для настройки статического IP и DNS без ошибок." 
+  ];
+  let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+  function typeEffect() {
+    const el = document.getElementById('typewriter-text');
+    if (!el) return;
+    const currentPhrase = phrases[phraseIndex];
+
+    if (isDeleting) {
+      el.textContent = currentPhrase.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      el.textContent = currentPhrase.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let speed = isDeleting ? 25 : 45;
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      speed = 2000; isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500;
+    }
+    setTimeout(typeEffect, speed);
+  }
+
+  // 2. Network Config Generation Logic
+  function generateNet() {
+    const conn = document.getElementById('conn-name').value || 'static-eth0';
+    const ifname = document.getElementById('if-name').value || 'eth0';
+    const ip = document.getElementById('ip-addr').value || '192.168.1.100/24';
+    
+    // Simple split for Gateway and DNS from the single box for UI simplicity
+    const gwDnsRaw = document.getElementById('gw-dns').value.split(' ');
+    const gw = gwDnsRaw[0] || '192.168.1.1';
+    const dns = gwDnsRaw[1] || '8.8.8.8';
+
+    const cmds = `
+# 1. Add new manual connection
+nmcli con add type ethernet con-name "${conn}" ifname "${ifname}" ipv4.addresses "${ip}" ipv4.gateway "${gw}" ipv4.dns "${dns}" ipv4.method manual
+
+# 2. Bring the connection UP
+nmcli con up "${conn}"
+
+# 3. Verify settings
+nmcli con show "${conn}"
+    `;
+    
+    const cmdBox = document.getElementById('net-commands');
+    cmdBox.style.display = 'block';
+    cmdBox.innerText = cmds.trim();
+  }
+</script>

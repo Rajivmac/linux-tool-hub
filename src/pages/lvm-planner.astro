@@ -1,0 +1,134 @@
+---
+import Navbar from '../components/Navbar.astro';
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="LVM Command Planner | Tool Hub">
+  <style>
+    /* LVM Theme: Orange/Red for Red Hat feel */
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(249, 115, 22, 0.3); color: #f97316; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 0.75rem; }
+    .page-title span { color: #f97316; }
+    
+    .type-cursor { display: inline-block; width: 2px; color: #f97316; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
+    @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .lvm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
+    @media(max-width: 600px){ .lvm-grid { grid-template-columns: 1fr; } }
+    
+    .input-box { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; }
+    .input-label { color: #9ca3af; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; display: block; text-transform: uppercase; }
+    .std-input { width: 100%; background: #0a0a0f; color: #fff; padding: 0.8rem; border: 1px solid #374151; border-radius: 8px; font-family: monospace; margin-bottom: 1rem; }
+    
+    .generate-btn { width: 100%; grid-column: 1 / -1; padding: 1rem; background: #ea580c; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+    .generate-btn:hover { background: #c2410c; }
+    
+    .command-box { background: #000; border-left: 4px solid #f97316; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; color: #4ade80; border-radius: 8px; margin-top: 2rem; display: none; line-height: 1.8; }
+  </style>
+
+  <div style="max-width:1100px;margin:0 auto;padding:3rem 1.25rem 4rem;">
+    <div style="text-align:center;margin-bottom:2.5rem;">
+      <div class="hero-badge"><span>💾</span> Storage Admin Tool</div>
+      <h1 class="page-title">LVM Command<br><span>Planner</span></h1>
+      
+      <p style="color: #9ca3af; max-width: 550px; margin: 0 auto; line-height: 1.6; min-height: 48px;">
+        <span id="typewriter-text"></span><span class="type-cursor">|</span>
+      </p>
+    </div>
+
+    <Navbar currentPath="/lvm-planner" />
+
+    <div class="lvm-grid">
+      <div class="input-box">
+        <label class="input-label">Disk Name (e.g., /dev/sdb)</label>
+        <input type="text" id="disk-name" class="std-input" placeholder="/dev/sdb" value="/dev/sdb">
+        
+        <label class="input-label">Volume Group Name</label>
+        <input type="text" id="vg-name" class="std-input" placeholder="data_vg" value="data_vg">
+      </div>
+      
+      <div class="input-box">
+        <label class="input-label">Logical Volume Name</label>
+        <input type="text" id="lv-name" class="std-input" placeholder="backup_lv" value="backup_lv">
+        
+        <label class="input-label">Size (e.g., 50G, 100%FREE)</label>
+        <input type="text" id="lv-size" class="std-input" placeholder="10G" value="10G">
+      </div>
+      
+      <button class="generate-btn" onclick="generateLVM()">Generate LVM Commands</button>
+    </div>
+
+    <div class="command-box" id="lvm-commands"></div>
+  </div>
+</MainLayout>
+
+<script is:inline>
+  // 1. Typewriter Logic
+  setTimeout(typeEffect, 500);
+  const phrases = [
+    "Physical Volume se lekar Mount karne tak ki exact commands generate karo.", 
+    "Generate exact commands from Physical Volume creation to Mounting.", 
+    "फिजिकल वॉल्यूम बनाने से लेकर माउंट करने तक की सटीक कमांड्स जनरेट करें।", 
+    "Genere comandos exactos desde la creación del Volumen Físico hasta el Montaje.", 
+    "Générez des commandes exactes de la création du volume physique au montage.", 
+    "Generieren Sie genaue Befehle von der Erstellung des Physical Volumes bis zum Mounten.", 
+    "物理ボリュームの作成からマウントまでの正確なコマンドを生成します。", 
+    "生成从物理卷创建到挂载的精确命令。", 
+    "Сгенерируйте точные команды от создания физического тома до монтирования." 
+  ];
+  let phraseIndex = 0; let charIndex = 0; let isDeleting = false;
+
+  function typeEffect() {
+    const el = document.getElementById('typewriter-text');
+    if (!el) return;
+    const currentPhrase = phrases[phraseIndex];
+
+    if (isDeleting) {
+      el.textContent = currentPhrase.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      el.textContent = currentPhrase.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let speed = isDeleting ? 25 : 45;
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      speed = 2000; isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; speed = 500;
+    }
+    setTimeout(typeEffect, speed);
+  }
+
+  // 2. LVM Command Generation Logic
+  function generateLVM() {
+    const disk = document.getElementById('disk-name').value || '/dev/sdb';
+    const vg = document.getElementById('vg-name').value || 'data_vg';
+    const lv = document.getElementById('lv-name').value || 'backup_lv';
+    const size = document.getElementById('lv-size').value || '10G';
+    
+    const sizeFlag = size.includes('%') ? '-l' : '-L';
+
+    const cmds = `
+# 1. Create Physical Volume
+pvcreate ${disk}
+
+# 2. Create Volume Group
+vgcreate ${vg} ${disk}
+
+# 3. Create Logical Volume
+lvcreate ${sizeFlag} ${size} -n ${lv} ${vg}
+
+# 4. Format with XFS (RHEL Default)
+mkfs.xfs /dev/${vg}/${lv}
+
+# 5. Create Mount Point & Mount
+mkdir -p /mnt/${lv}
+mount /dev/${vg}/${lv} /mnt/${lv}
+    `;
+    
+    const cmdBox = document.getElementById('lvm-commands');
+    cmdBox.style.display = 'block';
+    cmdBox.innerText = cmds.trim();
+  }
+</script>
