@@ -6,8 +6,32 @@ import MainLayout from '../layouts/MainLayout.astro';
 <MainLayout title="Network Config Generator | Tool Hub">
   <style>
     /* Network Theme: Cyan */
-    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.3); color: #06b6d4; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; margin-bottom: 1.2rem; }
-    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 0.75rem; }
+    .hero-badge { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+      background: rgba(6, 182, 212, 0.12); 
+      border: 1px solid rgba(6, 182, 212, 0.3); 
+      color: #06b6d4; 
+      font-size: 0.75rem; 
+      font-weight: 600; 
+      padding: 4px 12px; 
+      border-radius: 999px; 
+      text-transform: uppercase; 
+      margin-bottom: 1.2rem; 
+    }
+    
+    /* ⚡ FIXED: Title visibility in light and dark mode */
+    .page-title { 
+      font-size: clamp(1.8rem, 5vw, 2.8rem); 
+      font-weight: 800; 
+      color: #111827; /* Dark text for Light theme */
+      line-height: 1.15; 
+      margin-bottom: 0.75rem; 
+    }
+    :global(.dark) .page-title { 
+      color: #ffffff; /* White text for Dark theme */
+    }
     .page-title span { color: #06b6d4; }
     
     .type-cursor { display: inline-block; width: 2px; color: #06b6d4; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
@@ -16,9 +40,45 @@ import MainLayout from '../layouts/MainLayout.astro';
     .net-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
     @media(max-width: 600px){ .net-grid { grid-template-columns: 1fr; } }
     
-    .input-box { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; }
-    .input-label { color: #9ca3af; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; display: block; text-transform: uppercase; }
-    .std-input { width: 100%; background: #0a0a0f; color: #fff; padding: 0.8rem; border: 1px solid #374151; border-radius: 8px; font-family: monospace; margin-bottom: 1rem; }
+    /* ⚡ FIXED: Adaptive Layout Boxes for both themes */
+    .input-box { 
+      background: rgba(0, 0, 0, 0.03); 
+      border: 1px solid #e5e7eb; 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+    }
+    :global(.dark) .input-box { 
+      background: #111827; 
+      border-color: #1f2937; 
+    }
+    
+    .input-label { 
+      color: #374151; 
+      font-size: 0.85rem; 
+      font-weight: bold; 
+      margin-bottom: 0.5rem; 
+      display: block; 
+      text-transform: uppercase; 
+    }
+    :global(.dark) .input-label { 
+      color: #9ca3af; 
+    }
+    
+    .std-input { 
+      width: 100%; 
+      background: #ffffff; 
+      color: #111827; 
+      padding: 0.8rem; 
+      border: 1px solid #d1d5db; 
+      border-radius: 8px; 
+      font-family: monospace; 
+      margin-bottom: 1rem; 
+    }
+    :global(.dark) .std-input { 
+      background: #0a0a0f; 
+      color: #fff; 
+      border-color: #374151; 
+    }
     
     .generate-btn { width: 100%; grid-column: 1 / -1; padding: 1rem; background: #0891b2; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .generate-btn:hover { background: #0e7490; }
@@ -55,7 +115,7 @@ import MainLayout from '../layouts/MainLayout.astro';
         <input type="text" id="gw-dns" class="std-input" placeholder="GW: 192.168.1.1 | DNS: 8.8.8.8" value="192.168.1.1 8.8.8.8">
       </div>
       
-      <button class="generate-btn" onclick="generateNet()">Generate nmcli Commands</button>
+      <button class="generate-btn" onclick="generateNet()">Generate nmcli Commands 🚀</button>
     </div>
 
     <div class="command-box" id="net-commands"></div>
@@ -72,7 +132,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     "Genere comandos nmcli exactos para configurar IP estática y DNS sin errores.", 
     "Générez des commandes nmcli exactes pour configurer une IP statique et un DNS.", 
     "Generieren Sie exakte nmcli-Befehle, um statische IP und DNS fehlerfrei festzulegen.", 
-    "構文エラーなしで静的IPとDNSを設定するための正確なnmcliコマンドを生成します。", 
+    "構文エラーなしで静的IP...とDNSを設定するための正確なnmcliコマンドを生成します。", 
     "生成精确的 nmcli 命令以设置静态 IP 和 DNS，无语法错误。", 
     "Сгенерируйте точные команды nmcli для настройки статического IP и DNS без ошибок." 
   ];
@@ -106,7 +166,6 @@ import MainLayout from '../layouts/MainLayout.astro';
     const ifname = document.getElementById('if-name').value || 'eth0';
     const ip = document.getElementById('ip-addr').value || '192.168.1.100/24';
     
-    // Simple split for Gateway and DNS from the single box for UI simplicity
     const gwDnsRaw = document.getElementById('gw-dns').value.split(' ');
     const gw = gwDnsRaw[0] || '192.168.1.1';
     const dns = gwDnsRaw[1] || '8.8.8.8';

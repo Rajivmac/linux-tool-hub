@@ -6,9 +6,33 @@ import MainLayout from '../layouts/MainLayout.astro';
 <MainLayout title="LVM Command Planner | Tool Hub">
   <style>
     /* LVM Theme: Orange/Red for Red Hat feel */
-    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(249, 115, 22, 0.12); border: 1px solid rgba(249, 115, 22, 0.3); color: #f97316; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; margin-bottom: 1.2rem; }
-    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 0.75rem; }
-    .page-title span { color: #f97316; }
+    .hero-badge { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 6px; 
+      background: rgba(249, 115, 22, 0.12); 
+      border: 1px solid rgba(249, 115, 22, 0.3); 
+      color: #f97316; 
+      font-size: 0.75rem; 
+      font-weight: 600; 
+      padding: 4px 12px; 
+      border-radius: 999px; 
+      text-transform: uppercase; 
+      margin-bottom: 1.2rem; 
+    }
+    
+    /* ⚡ FIXED: Title visibility in light and dark mode */
+page-title { 
+      font-size: clamp(1.8rem, 5vw, 2.8rem); 
+      font-weight: 800; 
+      color: #111827; /* Dark text for Light theme */
+      line-height: 1.15; 
+      margin-bottom: 0.75rem; 
+    }
+    :global(.dark) .page-title { 
+      color: #ffffff; /* White text for Dark theme */
+    }
+page-title span { color: #f97316; }
     
     .type-cursor { display: inline-block; width: 2px; color: #f97316; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
     @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
@@ -16,9 +40,45 @@ import MainLayout from '../layouts/MainLayout.astro';
     .lvm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
     @media(max-width: 600px){ .lvm-grid { grid-template-columns: 1fr; } }
     
-    .input-box { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; }
-    .input-label { color: #9ca3af; font-size: 0.85rem; font-weight: bold; margin-bottom: 0.5rem; display: block; text-transform: uppercase; }
-    .std-input { width: 100%; background: #0a0a0f; color: #fff; padding: 0.8rem; border: 1px solid #374151; border-radius: 8px; font-family: monospace; margin-bottom: 1rem; }
+    /* ⚡ FIXED: Input Card and Labels for both themes */
+    .input-box { 
+      background: rgba(0, 0, 0, 0.03); 
+      border: 1px solid #e5e7eb; 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+    }
+    :global(.dark) .input-box { 
+      background: #111827; 
+      border-color: #1f2937; 
+    }
+    
+    .input-label { 
+      color: #374151; 
+      font-size: 0.85rem; 
+      font-weight: bold; 
+      margin-bottom: 0.5rem; 
+      display: block; 
+      text-transform: uppercase; 
+    }
+    :global(.dark) .input-label { 
+      color: #9ca3af; 
+    }
+    
+    .std-input { 
+      width: 100%; 
+      background: #ffffff; 
+      color: #111827; 
+      padding: 0.8rem; 
+      border: 1px solid #d1d5db; 
+      border-radius: 8px; 
+      font-family: monospace; 
+      margin-bottom: 1rem; 
+    }
+    :global(.dark) .std-input { 
+      background: #0a0a0f; 
+      color: #fff; 
+      border-color: #374151; 
+    }
     
     .generate-btn { width: 100%; grid-column: 1 / -1; padding: 1rem; background: #ea580c; color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; }
     .generate-btn:hover { background: #c2410c; }
@@ -55,7 +115,7 @@ import MainLayout from '../layouts/MainLayout.astro';
         <input type="text" id="lv-size" class="std-input" placeholder="10G" value="10G">
       </div>
       
-      <button class="generate-btn" onclick="generateLVM()">Generate LVM Commands</button>
+      <button class="generate-btn" onclick="generateLVM()">Generate LVM Commands 🚀</button>
     </div>
 
     <div class="command-box" id="lvm-commands"></div>
@@ -72,7 +132,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     "Genere comandos exactos desde la creación del Volumen Físico hasta el Montaje.", 
     "Générez des commandes exactes de la création du volume physique au montage.", 
     "Generieren Sie genaue Befehle von der Erstellung des Physical Volumes bis zum Mounten.", 
-    "物理ボリュームの作成からマウントまでの正確なコマンドを生成します。", 
+    "物理ボリューム of の作成からマウントまでの正確なコマンドを生成します。", 
     "生成从物理卷创建到挂载的精确命令。", 
     "Сгенерируйте точные команды от создания физического тома до монтирования." 
   ];

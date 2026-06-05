@@ -7,18 +7,75 @@ import MainLayout from '../layouts/MainLayout.astro';
   <style>
     /* Standard Layout CSS */
     .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.3); color: #ec4899; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.2rem; }
-    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    
+    /* ⚡ FIXED: Page title color visibility in light/dark theme */
+    .page-title { 
+      font-size: clamp(1.8rem, 5vw, 2.8rem); 
+      font-weight: 800; 
+      color: #111827; 
+      line-height: 1.15; 
+      letter-spacing: -0.03em; 
+      margin-bottom: 0.75rem; 
+    }
+    :global(.dark) .page-title { 
+      color: #ffffff; 
+    }
     .page-title span { color: #ec4899; }
     .page-subtitle { color: #9ca3af; font-size: clamp(0.9rem, 2vw, 1rem); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.6; min-height: 48px; }
     
     .type-cursor { display: inline-block; width: 2px; color: #ec4899; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
     @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-    .input-card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 24px rgba(0,0,0,0.3); transition: border-color 0.2s; }
+    /* ⚡ FIXED: Input Card styles for Light/Dark mode */
+    .input-card { 
+      background: rgba(0, 0, 0, 0.03); 
+      border: 1px solid #e5e7eb; 
+      border-radius: 16px; 
+      padding: 1.5rem; 
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06); 
+      transition: border-color 0.2s; 
+    }
+    :global(.dark) .input-card {
+      background: #111827;
+      border-color: #1f2937;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
     .input-card:focus-within { border-color: rgba(236,72,153,0.5); }
-    .input-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 0.75rem; }
     
-    .log-textarea { width: 100%; background: #0a0a0f; color: #ec4899; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; padding: 1rem; border-radius: 10px; border: 1px solid #1f2937; resize: vertical; outline: none; min-height: 120px; transition: border-color 0.2s; }
+    .input-label { 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      font-size: 0.82rem; 
+      font-weight: 700; 
+      color: #374151; 
+      text-transform: uppercase; 
+      margin-bottom: 0.75rem; 
+    }
+    :global(.dark) .input-label {
+      color: #9ca3af;
+    }
+    
+    /* ⚡ FIXED: Adaptive Textarea background and font color */
+    .log-textarea { 
+      width: 100%; 
+      background: #ffffff; 
+      color: #111827; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.9rem; 
+      padding: 1rem; 
+      border-radius: 10px; 
+      border: 1px solid #d1d5db; 
+      resize: vertical; 
+      outline: none; 
+      min-height: 120px; 
+      transition: border-color 0.2s; 
+    }
+    :global(.dark) .log-textarea {
+      background: #0a0a0f;
+      color: #ec4899;
+      border-color: #1f2937;
+    }
     .log-textarea:focus { border-color: #ec4899; }
     
     .analyze-btn { width: 100%; margin-top: 1rem; padding: 0.9rem 1.5rem; background: linear-gradient(135deg, #ec4899, #be185d); color: white; font-weight: 700; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer; transition: 0.2s; }
@@ -28,7 +85,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     /* AI Response Styling */
     .sol-heading { color: #f472b6; font-size: 0.9rem; font-weight: 700; margin: 1.2rem 0 0.5rem; padding-bottom: 4px; border-bottom: 1px solid #1f2937; display: block; }
     .sol-cmd { background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 2px 7px; border-radius: 4px; font-size: 0.8em; border: 1px solid rgba(16, 185, 129, 0.25); }
-    .sol-code-block { background: rgba(0,0,0,0.6); border-left: 2px solid #ec4899; padding: 15px; margin: 10px 0; border-radius: 6px; color: #e5e7eb; overflow-x: auto; white-space: pre-wrap; font-size: 0.85rem; }
+    .sol-code-block { background: rgba(0,0,0,0.9); border-left: 2px solid #ec4899; padding: 15px; margin: 10px 0; border-radius: 6px; color: #e5e7eb; overflow-x: auto; white-space: pre-wrap; font-size: 0.85rem; }
     
     @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
     .dot1 { animation: blink 1.2s infinite 0s; }
@@ -130,14 +187,13 @@ import MainLayout from '../layouts/MainLayout.astro';
     result.style.display = 'block';
     result.innerHTML = `<span style="color:#f472b6;">Connecting to AI Backend...</span>`;
     
-    // We modify the prompt here to force the AI to write a script instead of analyzing a log
     const modifiedPrompt = `Act as an expert Linux System Administrator. Write a bash script based on this request: "${input}". Provide the script inside a markdown code block, and briefly explain how to execute it.`;
 
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logText: modifiedPrompt }) // Using your existing API!
+        body: JSON.stringify({ logText: modifiedPrompt })
       });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

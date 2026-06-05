@@ -7,7 +7,19 @@ import MainLayout from '../layouts/MainLayout.astro';
   <style>
     /* Core Layout CSS */
     .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); color: #8b85ff; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1.2rem; }
-    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: var(--text-primary, #ffffff); line-height: 1.15; letter-spacing: -0.03em; margin-bottom: 0.75rem; }
+    
+    /* ⚡ FIXED: Page title visibility in light & dark theme */
+    .page-title { 
+      font-size: clamp(1.8rem, 5vw, 2.8rem); 
+      font-weight: 800; 
+      color: #111827; 
+      line-height: 1.15; 
+      letter-spacing: -0.03em; 
+      margin-bottom: 0.75rem; 
+    }
+    :global(.dark) .page-title { 
+      color: #ffffff; 
+    }
     .page-title span { color: #8b85ff; }
     
     .type-cursor { display: inline-block; width: 2px; color: #8b85ff; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
@@ -16,19 +28,84 @@ import MainLayout from '../layouts/MainLayout.astro';
     /* Input Section CSS */
     .input-card { background: var(--card-bg, #111827); border: 1px solid var(--card-border, #1f2937); border-radius: 16px; padding: 1.5rem; backdrop-filter: blur(12px); box-shadow: 0 4px 24px rgba(0,0,0,0.06); transition: border-color 0.2s; }
     .input-card:focus-within { border-color: rgba(108,99,255,0.5); }
+    
     .input-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 700; color: var(--text-secondary, #9ca3af); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.75rem; }
-    .log-textarea { width: 100%; background: #0a0a0f; color: #a78bfa; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.7; padding: 1rem; border-radius: 10px; border: 1px solid #1f2937; resize: vertical; outline: none; min-height: 120px; transition: border-color 0.2s; }
+    
+    /* ⚡ FIXED: Adaptive Input Textarea for Light & Dark mode */
+    .log-textarea { 
+      width: 100%; 
+      background: #ffffff; 
+      color: #111827; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.9rem; 
+      line-height: 1.7; 
+      padding: 1rem; 
+      border-radius: 10px; 
+      border: 1px solid #d1d5db; 
+      resize: vertical; 
+      outline: none; 
+      min-height: 120px; 
+      transition: border-color 0.2s; 
+    }
+    :global(.dark) .log-textarea { 
+      background: #0a0a0f; 
+      color: #a78bfa; 
+      border-color: #1f2937; 
+    }
     .log-textarea:focus { border-color: #6c63ff; }
-    .log-textarea::placeholder { color: #374151; }
+    .log-textarea::placeholder { color: #9ca3af; }
+    :global(.dark) .log-textarea::placeholder { color: #374151; }
     
     .analyze-btn { width: 100%; margin-top: 1rem; padding: 0.9rem 1.5rem; background: linear-gradient(135deg, #6c63ff, #8b5cf6); color: white; font-weight: 700; font-size: 1rem; border: none; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; position: relative; overflow: hidden; }
     .analyze-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(108,99,255,0.4); }
     .analyze-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
+    /* ⚡ FIXED: Result Area block moved from inline style to adaptive CSS class */
+    #result-area {
+      margin-top: 2rem; 
+      background: #f8f9fa; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+      color: #111827; 
+      font-family: 'JetBrains Mono', monospace; 
+      line-height: 1.6;
+    }
+    :global(.dark) #result-area {
+      background: #0a0a0f; 
+      border-color: #1f2937; 
+      color: #e5e7eb; 
+    }
+
     /* AI Formatting */
-    .sol-heading { color: #a78bfa; font-size: 0.85rem; font-weight: 700; margin: 1.2rem 0 0.5rem; padding-bottom: 4px; border-bottom: 1px solid #1f2937; display: block; }
-    .sol-cmd { background: rgba(74,222,128,0.1); color: #4ade80; padding: 2px 7px; border-radius: 4px; font-size: 0.8em; border: 1px solid rgba(74,222,128,0.25); }
-    .sol-code-block { background: rgba(0,0,0,0.4); border-left: 2px solid #4ade80; padding: 12px; margin: 10px 0; border-radius: 4px; color: #4ade80; font-size: 1.2rem; text-align: center; overflow-x: auto; white-space: pre-wrap; font-weight: bold; }
+    .sol-heading { color: #7c3aed; font-size: 0.85rem; font-weight: 700; margin: 1.2rem 0 0.5rem; padding-bottom: 4px; border-bottom: 1px solid #e5e7eb; display: block; }
+    :global(.dark) .sol-heading { color: #a78bfa; border-bottom-color: #1f2937; }
+    
+    .sol-cmd { background: rgba(22,163,74,0.08); color: #16a34a; padding: 2px 7px; border-radius: 4px; font-size: 0.8em; border: 1px solid rgba(22,163,74,0.2); }
+    :global(.dark) .sol-cmd { background: rgba(74,222,128,0.1); color: #4ade80; border-color: rgba(74,222,128,0.25); }
+    
+    /* ⚡ FIXED: Output Code blocks wrapper visibility dynamic configuration */
+    .sol-code-block { 
+      background: #ffffff; 
+      border: 1px solid #e5e7eb; 
+      border-left: 3px solid #6c63ff; 
+      padding: 12px; 
+      margin: 10px 0; 
+      border-radius: 4px; 
+      color: #111827; 
+      font-size: 1.2rem; 
+      text-align: center; 
+      overflow-x: auto; 
+      white-space: pre-wrap; 
+      font-weight: bold; 
+    }
+    :global(.dark) .sol-code-block { 
+      background: rgba(0,0,0,0.4); 
+      border-color: transparent;
+      border-left-width: 2px;
+      border-left-color: #4ade80; 
+      color: #4ade80; 
+    }
     
     @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
     .dot1 { animation: blink 1.2s infinite 0s; }
@@ -52,13 +129,13 @@ import MainLayout from '../layouts/MainLayout.astro';
       <div class="input-card">
         <div class="input-label">
           <span style="width:8px;height:8px;background:#a78bfa;border-radius:50%;display:inline-block;"></span>
-          Describe your schedule (Simple English)
+          Describe your schedule (Simple English / Hinglish)
         </div>
         <textarea id="cron-input" class="log-textarea" rows="4" placeholder="e.g., Run /scripts/backup.sh every Sunday at 2:00 AM..."></textarea>
         <button class="analyze-btn" id="submit-btn">Generate Cronjob ⏳</button>
       </div>
       
-      <div id="result-area" style="margin-top: 2rem; display: none; background: #0a0a0f; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; color: #e5e7eb; font-family: 'JetBrains Mono', monospace; line-height: 1.6;"></div>
+      <div id="result-area" style="display: none;"></div>
     </div>
   </div>
 </MainLayout>
@@ -113,7 +190,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     return html;
   }
 
-  // 3. REAL Backend API Call for Cronjob
+  // 3. Backend API Call for Cronjob
   document.getElementById('submit-btn')?.addEventListener('click', async () => {
     const input = document.getElementById('cron-input').value.trim();
     if(!input) {
@@ -130,14 +207,13 @@ import MainLayout from '../layouts/MainLayout.astro';
     resultArea.style.display = 'block';
     resultArea.innerHTML = "<span style='color:#818cf8;'>Connecting to AI Backend...</span>";
     
-    // Yahan humne AI ko specifically Cron format dene ko bola hai
     const modifiedPrompt = `Act as an expert Linux System Administrator. The user wants to schedule a cronjob: "${input}". Provide ONLY the exact cronjob schedule format (e.g., * * * * * /command) inside a markdown code block, followed by a brief 1-line explanation of what it does.`;
 
     try {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logText: modifiedPrompt }) // Tumhari API!
+        body: JSON.stringify({ logText: modifiedPrompt })
       });
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

@@ -7,7 +7,18 @@ import MainLayout from '../layouts/MainLayout.astro';
   <style>
     /* Emerald/Green Theme for System Health & Panel */
     .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; margin-bottom: 1.2rem; }
-    .page-title { font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; color: #ffffff; line-height: 1.15; margin-bottom: 0.75rem; }
+    
+    /* ⚡ FIXED: Page title text color according to active theme */
+    .page-title { 
+      font-size: clamp(1.8rem, 5vw, 2.8rem); 
+      font-weight: 800; 
+      color: #111827; 
+      line-height: 1.15; 
+      margin-bottom: 0.75rem; 
+    }
+    :global(.dark) .page-title { 
+      color: #ffffff; 
+    }
     .page-title span { color: #10b981; }
     
     .type-cursor { display: inline-block; width: 2px; color: #10b981; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
@@ -15,21 +26,102 @@ import MainLayout from '../layouts/MainLayout.astro';
 
     .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto 2rem; }
     
-    .panel-card { background: #111827; border: 1px solid #1f2937; border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; }
-    .card-title { color: #e5e7eb; font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #1f2937; padding-bottom: 0.5rem; }
+    /* ⚡ FIXED: Adaptive Dashboard Cards */
+    .panel-card { 
+      background: rgba(0, 0, 0, 0.03); 
+      border: 1px solid #e5e7eb; 
+      border-radius: 16px; 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+    }
+    :global(.dark) .panel-card {
+      background: #111827;
+      border-color: #1f2937;
+    }
     
-    .std-input { width: 100%; background: #0a0a0f; color: #10b981; padding: 0.8rem; border: 1px solid #374151; border-radius: 8px; font-family: 'JetBrains Mono', monospace; margin-bottom: 1rem; outline: none; transition: border-color 0.2s; }
+    /* ⚡ FIXED: Description visibility inside health card */
+    .panel-card p {
+      color: #4b5563;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+    }
+    :global(.dark) .panel-card p {
+      color: #9ca3af;
+    }
+    
+    .card-title { 
+      color: #111827; 
+      font-size: 1.1rem; 
+      font-weight: 700; 
+      margin-bottom: 1rem; 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      border-bottom: 1px solid #e5e7eb; 
+      padding-bottom: 0.5rem; 
+    }
+    :global(.dark) .card-title {
+      color: #e5e7eb;
+      border-color: #1f2937;
+    }
+    
+    /* ⚡ FIXED: Theme-adaptive input fields */
+    .std-input { 
+      width: 100%; 
+      background: #ffffff; 
+      color: #111827; 
+      padding: 0.8rem; 
+      border: 1px solid #d1d5db; 
+      border-radius: 8px; 
+      font-family: 'JetBrains Mono', monospace; 
+      margin-bottom: 1rem; 
+      outline: none; 
+      transition: border-color 0.2s; 
+    }
+    :global(.dark) .std-input {
+      background: #0a0a0f;
+      color: #10b981;
+      border-color: #374151;
+    }
     .std-input:focus { border-color: #10b981; }
 
     .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .panel-btn { flex: 1; padding: 0.6rem 1rem; background: #1f2937; color: #e5e7eb; border: 1px solid #374151; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    
+    /* ⚡ FIXED: Adaptive Buttons styling */
+    .panel-btn { 
+      flex: 1; 
+      padding: 0.6rem 1rem; 
+      background: #f3f4f6; 
+      color: #111827; 
+      border: 1px solid #d1d5db; 
+      border-radius: 8px; 
+      font-size: 0.85rem; 
+      font-weight: 600; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      white-space: nowrap; 
+    }
+    :global(.dark) .panel-btn {
+      background: #1f2937;
+      color: #e5e7eb;
+      border-color: #374151;
+    }
     .panel-btn:hover { background: #10b981; color: #000; border-color: #10b981; }
 
-    /* Terminal Output Box */
-    .terminal-container { max-width: 1000px; margin: 0 auto; background: #000; border: 1px solid #10b981; border-radius: 12px; overflow: hidden; }
-    .terminal-header { background: #0a0a0f; padding: 8px 15px; border-bottom: 1px solid #1f2937; display: flex; gap: 6px; }
+    /* ⚡ FIXED: Adaptive Terminal Container background styling */
+    .terminal-container { max-width: 1000px; margin: 0 auto; background: #f4f4f5; border: 1px solid #10b981; border-radius: 12px; overflow: hidden; }
+    :global(.dark) .terminal-container { background: #000; }
+
+    .terminal-header { background: #e4e4e7; padding: 8px 15px; border-bottom: 1px solid #d4d4d8; display: flex; gap: 6px; }
+    :global(.dark) .terminal-header { background: #0a0a0f; border-bottom: 1px solid #1f2937; }
+
     .mac-dot { width: 12px; height: 12px; border-radius: 50%; }
-    .terminal-body { padding: 1.5rem; font-family: 'JetBrains Mono', monospace; color: #4ade80; font-size: 0.95rem; line-height: 1.6; min-height: 100px; white-space: pre-wrap; }
+
+    /* ⚡ FIXED: Adaptive Terminal Body colors */
+    .terminal-body { padding: 1.5rem; font-family: 'JetBrains Mono', monospace; color: #047857; font-size: 0.95rem; line-height: 1.6; min-height: 100px; white-space: pre-wrap; }
+    :global(.dark) .terminal-body { color: #4ade80; }
+
     .cmd-prompt { color: #f472b6; }
   </style>
 
@@ -69,7 +161,7 @@ import MainLayout from '../layouts/MainLayout.astro';
 
       <div class="panel-card">
         <div class="card-title">🩺 System Health</div>
-        <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:1rem;">Generate commands to check server vitals instantly.</p>
+        <p>Generate commands to check server vitals instantly.</p>
         <div class="btn-group" style="margin-top: auto;">
           <button class="panel-btn" onclick="genCmd('df -hT')">Disk Space</button>
           <button class="panel-btn" onclick="genCmd('free -m')">RAM Usage</button>
@@ -99,7 +191,7 @@ import MainLayout from '../layouts/MainLayout.astro';
   const phrases = [
     "Zaroori system administration commands turant generate karo.", 
     "Generate essential system administration commands instantly.", 
-    "आवश्यक सिस्टम एडमिनिस्ट्रेशन कमांड्स तुरंत जनरेट करें।", 
+    "आवश्यक सिस्टम एडमिनिस्ट्रेशन कमांडส์ तुरंत जनरेट करें।", 
     "Genere comandos esenciales de administración del sistema al instante.", 
     "Générez instantanément des commandes d'administration système essentielles.", 
     "Generieren Sie sofort wichtige Systemverwaltungsbefehle.", 
@@ -139,6 +231,6 @@ import MainLayout from '../layouts/MainLayout.astro';
 
   function genCmd(cmd) {
     const term = document.getElementById('term-output');
-    term.innerHTML = `<span class="cmd-prompt">[root@server ~]#</span> ${cmd}\n<span style="color:#9ca3af; font-size:0.8rem;"># Copy and run this command on your Linux server.</span>`;
+    term.innerHTML = `<span class="cmd-prompt">[root@server ~]#</span> ${cmd}\n<span style="color:#6b7280; font-size:0.8rem;"># Copy and run this command on your Linux server.</span>`;
   }
 </script>

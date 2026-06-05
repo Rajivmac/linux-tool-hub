@@ -75,24 +75,31 @@ import MainLayout from '../layouts/MainLayout.astro';
       margin-bottom: 0.75rem;
     }
 
+    /* ⚡ FIXED: Added !important constraints to override deep theme layouts */
     .log-textarea {
       width: 100%;
-      background: #0a0a0f;
-      color: #4ade80;
+      background: #ffffff !important;
+      color: #111827 !important;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.82rem;
       line-height: 1.7;
       padding: 1rem;
       border-radius: 10px;
-      border: 1px solid #1f2937;
+      border: 1px solid #d1d5db;
       resize: vertical;
       outline: none;
       transition: border-color 0.2s;
       min-height: 160px;
     }
+    :global(.dark) .log-textarea {
+      background: #0a0a0f !important;
+      color: #4ade80 !important;
+      border-color: #1f2937;
+    }
 
     .log-textarea:focus { border-color: #6c63ff; }
-    .log-textarea::placeholder { color: #374151; }
+    .log-textarea::placeholder { color: #6b7280 !important; }
+    :global(.dark) .log-textarea::placeholder { color: #374151 !important; }
 
     .analyze-btn {
       width: 100%;
@@ -139,14 +146,21 @@ import MainLayout from '../layouts/MainLayout.astro';
       min-height: 300px;
     }
 
+    /* ⚡ FIXED: Dynamic light/dark support for background structures */
     .error-card {
-      background: rgba(10,10,15,0.95);
+      background: #fef2f2 !important;
       border-color: rgba(239,68,68,0.25);
+    }
+    :global(.dark) .error-card {
+      background: rgba(10,10,15,0.95) !important;
     }
 
     .solution-card {
-      background: rgba(10,10,15,0.95);
+      background: #f0fdf4 !important;
       border-color: rgba(74,222,128,0.25);
+    }
+    :global(.dark) .solution-card {
+      background: rgba(10,10,15,0.95) !important;
     }
 
     .card-header {
@@ -155,7 +169,10 @@ import MainLayout from '../layouts/MainLayout.astro';
       align-items: center;
       padding-bottom: 0.75rem;
       margin-bottom: 0.75rem;
-      border-bottom: 1px solid #1f2937;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    :global(.dark) .card-header {
+      border-bottom-color: #1f2937;
     }
 
     .card-title {
@@ -168,12 +185,15 @@ import MainLayout from '../layouts/MainLayout.astro';
       gap: 6px;
     }
 
-    .card-title.error { color: #f87171; }
-    .card-title.solution { color: #4ade80; }
+    .card-title.error { color: #ef4444; }
+    :global(.dark) .card-title.error { color: #f87171; }
+    
+    .card-title.solution { color: #16a34a; }
+    :global(.dark) .card-title.solution { color: #4ade80; }
 
     .card-action-btn {
-      background: #1f2937;
-      color: #9ca3af;
+      background: #e5e7eb;
+      color: #374151;
       border: none;
       padding: 4px 10px;
       border-radius: 6px;
@@ -181,19 +201,28 @@ import MainLayout from '../layouts/MainLayout.astro';
       font-size: 0.75rem;
       transition: all 0.15s;
     }
-    .card-action-btn:hover { background: #374151; color: #e5e7eb; }
+    .card-action-btn:hover { background: #d1d5db; color: #111827; }
+    :global(.dark) .card-action-btn {
+      background: #1f2937;
+      color: #9ca3af;
+    }
+    :global(.dark) .card-action-btn:hover { background: #374151; color: #e5e7eb; }
 
+    /* ⚡ FIXED: Output content readability fonts matching standard themes */
     .card-content {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.78rem;
       line-height: 1.8;
       overflow-y: auto;
       flex: 1;
-      color: #9ca3af;
+      color: #1f2937 !important;
+    }
+    :global(.dark) .card-content {
+      color: #9ca3af !important;
     }
 
     .card-content::-webkit-scrollbar { width: 4px; }
-    .card-content::-webkit-scrollbar-track { background: #111827; }
+    .card-content::-webkit-scrollbar-track { background: transparent; }
     .error-card .card-content::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 2px; }
     .solution-card .card-content::-webkit-scrollbar-thumb { background: #4ade80; border-radius: 2px; }
 
@@ -201,53 +230,79 @@ import MainLayout from '../layouts/MainLayout.astro';
       display: block;
       padding: 2px 8px;
       border-left: 2px solid #ef4444;
-      background: rgba(239,68,68,0.08);
-      color: #fca5a5;
+      background: rgba(239,68,68,0.05);
+      color: #b91c1c;
       border-radius: 2px;
       margin: 2px 0;
     }
+    :global(.dark) .err-line {
+      background: rgba(239,68,68,0.08);
+      color: #fca5a5;
+    }
+    
     .normal-line { display: block; padding: 2px 4px; }
 
     .sol-heading {
-      color: #a78bfa;
+      color: #7c3aed;
       font-size: 0.85rem;
       font-weight: 700;
       margin: 1.2rem 0 0.5rem;
       padding-bottom: 4px;
-      border-bottom: 1px solid #1f2937;
+      border-bottom: 1px solid #e5e7eb;
       display: block;
     }
+    :global(.dark) .sol-heading {
+      color: #a78bfa;
+      border-bottom-color: #1f2937;
+    }
+
     .sol-cmd {
-      background: rgba(74,222,128,0.1);
-      color: #4ade80;
+      background: rgba(22,163,74,0.08);
+      color: #16a34a;
       padding: 2px 7px;
       border-radius: 4px;
       font-size: 0.8em;
-      border: 1px solid rgba(74,222,128,0.25);
+      border: 1px solid rgba(22,163,74,0.2);
     }
+    :global(.dark) .sol-cmd {
+      background: rgba(74,222,128,0.1);
+      color: #4ade80;
+      border-color: rgba(74,222,128,0.25);
+    }
+
     .sol-code-block {
-      background: rgba(0,0,0,0.4);
-      border-left: 2px solid #4ade80;
+      background: #f1f5f9 !important;
+      border-left: 3px solid #16a34a;
       padding: 12px;
       margin: 10px 0;
       border-radius: 4px;
-      color: #4ade80;
+      color: #0f172a !important;
       overflow-x: auto;
       white-space: pre-wrap;
+      border: 1px solid #e2e8f0;
     }
+    :global(.dark) .sol-code-block {
+      background: rgba(0,0,0,0.4) !important;
+      border-color: transparent;
+      border-left: 2px solid #4ade80;
+      color: #4ade80 !important;
+    }
+
     .sol-bullet {
       display: flex;
       gap: 8px;
       margin: 6px 0;
       align-items: flex-start;
     }
-    .sol-bullet-dot { color: #4ade80; flex-shrink: 0; margin-top: 2px; }
+    .sol-bullet-dot { color: #16a34a; flex-shrink: 0; margin-top: 2px; }
+    :global(.dark) .sol-bullet-dot { color: #4ade80; }
+
     .sol-num {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #4ade80;
-      color: #000;
+      background: #16a34a;
+      color: #fff;
       font-weight: 800;
       font-size: 0.65rem;
       width: 18px;
@@ -256,7 +311,12 @@ import MainLayout from '../layouts/MainLayout.astro';
       flex-shrink: 0;
       margin-top: 2px;
     }
-    .sol-bold { color: #e2e8f0; font-weight: 600; }
+    :global(.dark) .sol-num {
+      background: #4ade80;
+      color: #000;
+    }
+    .sol-bold { color: #1f2937; font-weight: 600; }
+    :global(.dark) .sol-bold { color: #e2e8f0; }
 
     @keyframes blink {
       0%, 100% { opacity: 0.2; }
@@ -374,6 +434,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     }).join('');
   }
 
+  /* Modified json parse stream handler */
   function renderSolution(text) {
     try {
       const parsed = JSON.parse(text);
