@@ -21,18 +21,19 @@ import MainLayout from '../layouts/MainLayout.astro';
       margin-bottom: 1.2rem; 
     }
     
-    /* ⚡ FIXED: Title visibility in light and dark mode */
-page-title { 
-      font-size: clamp(1.8rem, 5vw, 2.8rem); 
+    /* ⚡ FIXED: Added '.' and increased font-size to match Permission Calculator */
+    .page-title { 
+      font-size: clamp(2.5rem, 7vw, 4rem); /* Big and bold response size */
       font-weight: 800; 
       color: #111827; /* Dark text for Light theme */
-      line-height: 1.15; 
+      line-height: 1.1; 
       margin-bottom: 0.75rem; 
+      letter-spacing: -0.03em;
     }
     :global(.dark) .page-title { 
       color: #ffffff; /* White text for Dark theme */
     }
-page-title span { color: #f97316; }
+    .page-title span { color: #f97316; }
     
     .type-cursor { display: inline-block; width: 2px; color: #f97316; animation: cursorBlink 0.8s step-end infinite; margin-left: 2px; font-weight: bold; }
     @keyframes cursorBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
@@ -40,7 +41,7 @@ page-title span { color: #f97316; }
     .lvm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 800px; margin: 0 auto; }
     @media(max-width: 600px){ .lvm-grid { grid-template-columns: 1fr; } }
     
-    /* ⚡ FIXED: Input Card and Labels for both themes */
+    /* Input Card and Labels for both themes */
     .input-box { 
       background: rgba(0, 0, 0, 0.03); 
       border: 1px solid #e5e7eb; 
