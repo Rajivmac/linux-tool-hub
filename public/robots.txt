@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://linux-tool-hub.vercel.app/sitemap-index.xml
